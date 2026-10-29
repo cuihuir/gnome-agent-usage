@@ -83,6 +83,7 @@ class LimitTests(unittest.TestCase):
             }],
         })
         self.assertEqual([item["label"] for item in limits], ["会话（5 小时）", "每周（7 天）", "Fable 每周"])
+        self.assertEqual([item["model"] for item in limits], ["", "", "Fable"])
 
     def test_codex_buckets(self):
         limits, plan = usage.codex_limits_from_result({
@@ -96,6 +97,7 @@ class LimitTests(unittest.TestCase):
         })
         self.assertEqual(plan, "Plus")
         self.assertEqual([item["label"] for item in limits], ["会话", "每周"])
+        self.assertEqual([item["model"] for item in limits], ["", ""])
         self.assertAlmostEqual(limits[0]["percent"], 0.18)
 
     def test_host_pin_does_not_touch_the_network(self):

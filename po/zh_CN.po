@@ -5,6 +5,9 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
+msgid "soon"
+msgstr "即将"
+
 msgid "Resets soon"
 msgstr "即将重置"
 

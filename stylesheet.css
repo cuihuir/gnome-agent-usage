@@ -44,42 +44,56 @@
 }
 
 .agent-quota-block {
-  padding-top: 12px;
+  padding-top: 6px;
 }
 
-.agent-quota-name {
-  padding: 8px 20px 0;
+.agent-quota-account {
+  padding: 8px 18px 0;
+  font-size: 13px;
+  font-weight: 700;
 }
 
-.agent-quota-when {
-  padding: 6px 20px 0;
+.agent-quota-row {
+  padding: 3px 16px;
+  spacing: 8px;
 }
 
-.agent-quota-head {
-  padding: 0 20px;
-  spacing: 12px;
+.agent-quota-row.stale {
+  opacity: 0.55;
+}
+
+.agent-quota-dot {
+  border-radius: 99px;
+  background-color: #3dbe6e;
+}
+
+.agent-quota-dot.tone-warn { background-color: #e5a50a; }
+.agent-quota-dot.tone-hot { background-color: #ff5c5c; }
+
+.agent-quota-label {
+  font-size: 13px;
 }
 
 .agent-quota-pct {
-  font-size: 15px;
+  min-width: 36px;
+  font-size: 12px;
   font-weight: 700;
-  color: #c4b5fd;
+  color: #3dbe6e;
+  text-align: right;
 }
 
 .agent-quota-pct.tone-warn { color: #e5a50a; }
-.agent-quota-pct.tone-hot { color: #ff6b6b; }
+.agent-quota-pct.tone-hot { color: #ff5c5c; }
 
-.agent-quota-reset {
+.agent-quota-time {
   font-size: 12px;
+  color: alpha(currentColor, 0.62);
+  text-align: right;
 }
 
-.agent-quota-bar {
-  padding: 8px 20px 0;
-}
-
-.agent-quota-bar.spaced {
-  padding-bottom: 8px;
-}
+.agent-fill.quota { background-color: #3dbe6e; }
+.agent-fill.quota.tone-warn { background-color: #e5a50a; }
+.agent-fill.quota.tone-hot { background-color: #ff5c5c; }
 
 .agent-rule {
   height: 1px;

@@ -48,29 +48,6 @@ function formatTokens(value) {
     return `${trimNumber(number / 1000000000)}B`;
 }
 
-function formatRemain(iso) {
-    const stamp = Date.parse(iso || '');
-    if (!Number.isFinite(stamp))
-        return '';
-    let seconds = Math.round((stamp - Date.now()) / 1000);
-    if (seconds <= 0)
-        return _('Resets soon');
-    const days = Math.floor(seconds / 86400);
-    seconds -= days * 86400;
-    const hours = Math.floor(seconds / 3600);
-    seconds -= hours * 3600;
-    const minutes = Math.floor(seconds / 60);
-    if (days > 0 && hours > 0)
-        return _('%d days %d hours').replace('%d', String(days)).replace('%d', String(hours));
-    if (days > 0)
-        return _('%d days').replace('%d', String(days));
-    if (hours > 0 && minutes > 0)
-        return _('%d hours %d minutes').replace('%d', String(hours)).replace('%d', String(minutes));
-    if (hours > 0)
-        return _('%d hours').replace('%d', String(hours));
-    return _('%d minutes').replace('%d', String(Math.max(1, minutes)));
-}
-
 function formatAge(iso) {
     const stamp = Date.parse(iso || '');
     if (!Number.isFinite(stamp))
@@ -115,50 +92,65 @@ function collectedLimits(snapshot) {
     return rows;
 }
 
-function windowTitle(limit) {
+function windowTag(limit) {
     const seconds = Number(limit?.windowSeconds) || 0;
     const raw = String(limit?.label || '');
-    let kind = '';
     if (seconds >= 20 * 86400 || raw.includes('月'))
-        kind = _('Monthly limit');
-    else if (seconds >= 6 * 86400 || raw.includes('周'))
-        kind = _('Weekly limit');
-    else if ((seconds > 0 && seconds <= 12 * 3600) || raw.includes('小时') || raw.includes('会话'))
-        kind = _('5-hour limit');
-    if (!kind)
-        return '';
-    const prefix = raw
+        return '30d';
+    if (seconds >= 6 * 86400 || raw.includes('周'))
+        return '7d';
+    if ((seconds > 0 && seconds <= 12 * 3600) || raw.includes('小时') || raw.includes('会话'))
+        return '5h';
+    return '';
+}
+
+function limitModel(limit) {
+    const model = String(limit?.model || '').trim();
+    if (model)
+        return model;
+    return String(limit?.label || '')
         .replace(/（[^）]*）/g, '')
         .replace(/每周|每月|会话|5\s*小时|小时/g, '')
         .trim();
-    return prefix ? `${prefix} ${kind}` : kind;
 }
 
-function formatWhen(iso) {
+function accountPlan(agent) {
+    const plan = String(agent?.plan || '').trim();
+    if (!plan || plan === '本地' || plan === '本地网关' || plan === 'API key')
+        return '';
+    return plan;
+}
+
+function quotaLabel(limit, plan) {
+    const tag = windowTag(limit);
+    const model = limitModel(limit) || plan;
+    if (model && tag)
+        return `${model}  ${tag}`;
+    return tag || model;
+}
+
+function formatRemainShort(iso) {
     const stamp = Date.parse(iso || '');
     if (!Number.isFinite(stamp))
         return '';
-    const date = new Date(stamp);
-    const now = new Date();
-    const hh = String(date.getHours()).padStart(2, '0');
-    const mm = String(date.getMinutes()).padStart(2, '0');
-    const clock = `${hh}:${mm}`;
-    const day = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-    const that = new Date(date.getFullYear(), date.getMonth(), date.getDate());
-    const diff = Math.round((that - day) / 86400000);
-    if (diff === 0)
-        return _('Resets today at %s').replace('%s', clock);
-    if (diff === 1)
-        return _('Resets tomorrow at %s').replace('%s', clock);
-    return _('Resets on %m/%d at %s')
-        .replace('%m', String(date.getMonth() + 1))
-        .replace('%d', String(date.getDate()))
-        .replace('%s', clock);
+    let seconds = Math.round((stamp - Date.now()) / 1000);
+    if (seconds <= 0)
+        return _('soon');
+    const days = Math.floor(seconds / 86400);
+    seconds -= days * 86400;
+    const hours = Math.floor(seconds / 3600);
+    seconds -= hours * 3600;
+    const minutes = Math.floor(seconds / 60);
+    if (days > 0)
+        return hours > 0 ? `${days}d ${hours}h` : `${days}d`;
+    if (hours > 0)
+        return minutes > 0 ? `${hours}h ${minutes}m` : `${hours}h`;
+    return `${Math.max(1, minutes)}m`;
 }
 
 function timedLimits(snapshot) {
     return collectedLimits(snapshot).filter(row => {
-        return windowTitle(row.limit) && Number.isFinite(Date.parse(row.limit.resetsAt || ''));
+        return windowTag(row.limit) && Number.isFinite(Date.parse(row.limit.resetsAt || ''));
     }).sort((a, b) => Date.parse(a.limit.resetsAt) - Date.parse(b.limit.resetsAt));
 }
 
@@ -166,9 +158,9 @@ function barText(snapshot) {
     const row = timedLimits(snapshot)[0];
     if (!row)
         return _('Usage');
-    const remain = formatRemain(row.limit.resetsAt);
-    const title = windowTitle(row.limit);
-    return remain ? `${title} ${remain}` : title;
+    const remain = formatRemainShort(row.limit.resetsAt);
+    const tag = windowTag(row.limit);
+    return remain ? `${tag} ${remain}` : tag;
 }
 
 function combine(snapshot, key) {
@@ -378,7 +370,7 @@ class AgentUsageIndicator extends PanelMenu.Button {
         this._label.style_class = `agent-usage-text tone-${soonest?.limit.tone || snapshot.tone || 'ok'}`;
         const total = totalTokens(snapshot);
         this.accessible_name = soonest
-            ? `${windowTitle(soonest.limit)} ${formatRemain(soonest.limit.resetsAt)} ${formatWhen(soonest.limit.resetsAt)}`
+            ? `${soonest.agent.name} ${quotaLabel(soonest.limit, accountPlan(soonest.agent))} ${formatRemainShort(soonest.limit.resetsAt)}`
             : _('Total %s').replace('%s', formatTokens(total));
         this._layoutHooks = [];
         this._chrome.destroy_all_children();
@@ -446,71 +438,75 @@ class AgentUsageIndicator extends PanelMenu.Button {
     }
 
     _quotas(snapshot) {
-        const entries = timedLimits(snapshot);
-        if (!entries.length)
+        const groups = [];
+        for (const row of timedLimits(snapshot)) {
+            let group = groups.find(item => item.agent.id === row.agent.id);
+            if (!group) {
+                group = {agent: row.agent, limits: []};
+                groups.push(group);
+            }
+            group.limits.push(row.limit);
+        }
+        if (!groups.length)
             return null;
         const block = vbox('agent-quota-block');
-        const titles = entries.map(entry => windowTitle(entry.limit));
-        entries.forEach((entry, index) => {
-            const {agent, limit} = entry;
-            let title = titles[index];
-            if (titles.filter(item => item === title).length > 1)
-                title = `${agent.name} ${title}`;
-            block.add_child(new St.Label({text: title, style_class: 'agent-kicker agent-quota-name'}));
-            const head = hbox('agent-quota-head');
-            const remain = new St.Label({
-                text: formatRemain(limit.resetsAt),
-                style_class: 'agent-total-value',
-                y_align: Clutter.ActorAlign.END,
-            });
-            this._resetLabels.push([remain, agent, limit, 'remain']);
-            head.add_child(remain);
-            head.add_child(new St.Widget({x_expand: true}));
-            head.add_child(new St.Label({
-                text: `${Math.round((limit.percent || 0) * 100)}%`,
-                style_class: `agent-quota-pct tone-${limit.tone || 'ok'}`,
-                y_align: Clutter.ActorAlign.END,
+        for (const group of groups) {
+            group.limits.sort((a, b) => (a.windowSeconds || 0) - (b.windowSeconds || 0));
+            block.add_child(new St.Label({
+                text: group.agent.name,
+                style_class: 'agent-quota-account',
             }));
-            block.add_child(head);
-
-            const ratio = Math.max(0, Math.min(1, limit.percent || 0));
-            const track = new St.BoxLayout({
-                style_class: 'agent-track agent-track-quota',
-                x_expand: true,
-                y_align: Clutter.ActorAlign.CENTER,
-            });
-            pinSize(track, 380, QUOTA_HEIGHT);
-            const fill = new St.Widget({
-                style_class: `agent-fill tone-${limit.tone || 'ok'}`,
-                x_expand: false,
-            });
-            pinSize(fill, ratio > 0 ? Math.max(8, Math.round(380 * ratio)) : 0, QUOTA_HEIGHT);
-            track.add_child(fill);
-            track.add_child(new St.Widget({x_expand: true, style_class: 'agent-track-rest'}));
-            const applyWidth = () => {
-                const span = track.width || 380;
-                pinSize(fill, ratio > 0 ? Math.max(8, Math.round(span * ratio)) : 0, QUOTA_HEIGHT);
-            };
-            track.connect('notify::width', applyWidth);
-            this._layoutHooks.push(applyWidth);
-            const barRow = hbox('agent-quota-bar');
-            barRow.add_child(track);
-            block.add_child(barRow);
-            const when = new St.Label({
-                text: this._whenText(agent, limit),
-                style_class: 'agent-muted agent-quota-when',
-            });
-            this._resetLabels.push([when, agent, limit, 'when']);
-            block.add_child(when);
-        });
+            for (const limit of group.limits)
+                block.add_child(this._quotaRow(group.agent, limit));
+        }
         return block;
     }
 
-    _whenText(agent, limit) {
-        const when = formatWhen(limit.resetsAt);
-        if (agent.stale && when)
-            return _('Earlier figures · %s').replace('%s', when);
-        return when;
+    _quotaRow(agent, limit) {
+        const tone = limit.tone || 'ok';
+        const ratio = Math.max(0, Math.min(1, limit.percent || 0));
+        const row = hbox(agent.stale ? 'agent-quota-row stale' : 'agent-quota-row');
+        const dot = new St.Widget({style_class: `agent-quota-dot tone-${tone}`, y_align: Clutter.ActorAlign.CENTER});
+        pinSize(dot, 8, 8);
+        row.add_child(dot);
+        const title = ellipsize(new St.Label({
+            text: quotaLabel(limit, accountPlan(agent)),
+            style_class: 'agent-quota-label',
+            y_align: Clutter.ActorAlign.CENTER,
+        }));
+        pinSize(title, 128, null);
+        row.add_child(title);
+        const track = new St.BoxLayout({
+            style_class: 'agent-track',
+            x_expand: true,
+            y_align: Clutter.ActorAlign.CENTER,
+        });
+        pinSize(track, 96, 6);
+        const fill = new St.Widget({style_class: `agent-fill quota tone-${tone}`, x_expand: false});
+        pinSize(fill, ratio > 0 ? Math.max(4, Math.round(96 * ratio)) : 0, 6);
+        track.add_child(fill);
+        track.add_child(new St.Widget({x_expand: true}));
+        const applyWidth = () => {
+            const span = track.width || 96;
+            pinSize(fill, ratio > 0 ? Math.max(4, Math.round(span * ratio)) : 0, 6);
+        };
+        track.connect('notify::width', applyWidth);
+        this._layoutHooks.push(applyWidth);
+        row.add_child(track);
+        row.add_child(new St.Label({
+            text: `${Math.round((limit.percent || 0) * 100)}%`,
+            style_class: `agent-quota-pct tone-${tone}`,
+            y_align: Clutter.ActorAlign.CENTER,
+        }));
+        const remain = new St.Label({
+            text: formatRemainShort(limit.resetsAt),
+            style_class: 'agent-quota-time',
+            y_align: Clutter.ActorAlign.CENTER,
+        });
+        pinSize(remain, 58, null);
+        this._resetLabels.push([remain, limit]);
+        row.add_child(remain);
+        return row;
     }
 
     _projects(snapshot, total, knowsProjects) {
@@ -591,11 +587,8 @@ class AgentUsageIndicator extends PanelMenu.Button {
     _startClock() {
         this._stopClock();
         this._clock = GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT, 30, () => {
-            for (const [label, agent, limit, kind] of this._resetLabels) {
-                label.text = kind === 'when'
-                    ? this._whenText(agent, limit)
-                    : formatRemain(limit.resetsAt);
-            }
+            for (const [label, limit] of this._resetLabels)
+                label.text = formatRemainShort(limit.resetsAt);
             if (this._age && this._snapshot)
                 this._age.text = formatAge(this._snapshot.updatedAt);
             return GLib.SOURCE_CONTINUE;

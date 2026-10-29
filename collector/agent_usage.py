@@ -995,6 +995,7 @@ def claude_limits_from_payload(payload: dict) -> list[dict]:
         limits.append({
             "id": limit_id,
             "label": label,
+            "model": "",
             "percent": clamp_ratio(percent),
             "resetsAt": str(bucket.get("resets_at") or ""),
             "windowSeconds": window,
@@ -1026,6 +1027,7 @@ def claude_limits_from_payload(payload: dict) -> list[dict]:
             limits.append({
                 "id": f"{name}-{suffix}",
                 "label": label,
+                "model": name,
                 "percent": clamp_ratio(percent),
                 "resetsAt": str(entry.get("resets_at") or ""),
                 "windowSeconds": window,
@@ -1163,6 +1165,7 @@ def codex_limits_from_result(result: dict) -> tuple[list[dict], str]:
             limits.append({
                 "id": f"{limit_id}-{suffix}",
                 "label": label,
+                "model": "" if general else name,
                 "percent": clamp_ratio(used / 100),
                 "resetsAt": resets.isoformat() if resets else "",
                 "windowSeconds": minutes * 60,
