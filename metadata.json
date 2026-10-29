@@ -1,0 +1,10 @@
+{
+  "uuid": "agent-usage@fedora-enhance",
+  "name": "Agent Usage",
+  "description": "Shows a 5-hour or weekly limit when a local CLI login can answer it, then model and project usage from this computer. It reads Claude, Codex, Grok, and OpenCode session files. With an existing Grok or Anthropic login it requests usage from cli-chat-proxy.grok.com or api.anthropic.com. It does not send session text or store tokens.",
+  "gettext-domain": "agent-usage@fedora-enhance",
+  "shell-version": ["50"],
+  "version": 2,
+  "license": "GPL-2.0-or-later",
+  "url": "https://github.com/cuihuir/gnome-agent-usage"
+}

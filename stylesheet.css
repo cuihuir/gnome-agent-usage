@@ -1,0 +1,153 @@
+.agent-usage-bar {
+  spacing: 6px;
+}
+
+.agent-usage-text {
+  font-weight: 600;
+}
+
+.agent-usage-text.tone-warn { color: #e5a50a; }
+.agent-usage-text.tone-hot { color: #ff6b6b; }
+
+.agent-usage-root {
+  min-width: 460px;
+  padding: 8px 0 4px;
+}
+
+.agent-usage-scroll {
+  min-width: 460px;
+  max-height: 430px;
+}
+
+.agent-header {
+  padding: 2px 20px 0;
+}
+
+.agent-title {
+  font-weight: 700;
+  font-size: 15px;
+}
+
+.agent-summary {
+  padding: 14px 20px 0;
+}
+
+.agent-kicker {
+  font-size: 12px;
+  font-weight: 600;
+  color: alpha(currentColor, 0.48);
+}
+
+.agent-total-value {
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.agent-quota-block {
+  padding-top: 12px;
+}
+
+.agent-quota-name {
+  padding: 8px 20px 0;
+}
+
+.agent-quota-when {
+  padding: 6px 20px 0;
+}
+
+.agent-quota-head {
+  padding: 0 20px;
+  spacing: 12px;
+}
+
+.agent-quota-pct {
+  font-size: 15px;
+  font-weight: 700;
+  color: #c4b5fd;
+}
+
+.agent-quota-pct.tone-warn { color: #e5a50a; }
+.agent-quota-pct.tone-hot { color: #ff6b6b; }
+
+.agent-quota-reset {
+  font-size: 12px;
+}
+
+.agent-quota-bar {
+  padding: 8px 20px 0;
+}
+
+.agent-quota-bar.spaced {
+  padding-bottom: 8px;
+}
+
+.agent-rule {
+  height: 1px;
+  margin: 14px 20px 0;
+  background-color: alpha(currentColor, 0.10);
+}
+
+.agent-section {
+  padding: 16px 20px 6px;
+  font-size: 12px;
+  font-weight: 700;
+  color: alpha(currentColor, 0.46);
+}
+
+.agent-row {
+  margin: 0 10px;
+  padding: 6px 10px;
+  spacing: 14px;
+  border-radius: 8px;
+}
+
+.agent-row:hover {
+  background-color: alpha(currentColor, 0.06);
+}
+
+.agent-row-name {
+  font-size: 13px;
+  color: alpha(currentColor, 0.88);
+}
+
+.agent-row-value {
+  font-size: 13px;
+  font-weight: 600;
+  text-align: right;
+}
+
+.agent-track {
+  border-radius: 99px;
+  background-color: alpha(currentColor, 0.14);
+}
+
+.agent-fill {
+  border-radius: 99px;
+  background-color: #a594ff;
+}
+
+.agent-fill.tone-warn { background-color: #e5a50a; }
+.agent-fill.tone-hot { background-color: #ff6b6b; }
+
+.agent-more,
+.agent-note,
+.agent-footer,
+.agent-muted {
+  color: alpha(currentColor, 0.50);
+  font-size: 12px;
+}
+
+.agent-more { padding: 2px 20px 0; }
+.agent-note { padding: 8px 20px 0; }
+.agent-footer { padding: 14px 20px 8px; }
+
+.agent-refresh {
+  padding: 2px 2px;
+  font-size: 13px;
+  color: alpha(currentColor, 0.62);
+  background-color: transparent;
+}
+
+.agent-refresh:hover {
+  color: currentColor;
+}

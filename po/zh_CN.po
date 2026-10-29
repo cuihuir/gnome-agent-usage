@@ -1,0 +1,105 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: agent-usage\n"
+"Language: zh_CN\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+msgid "Resets soon"
+msgstr "即将重置"
+
+msgid "%d days %d hours"
+msgstr "%d天%d小时"
+
+msgid "%d days"
+msgstr "%d天"
+
+msgid "%d hours %d minutes"
+msgstr "%d小时%d分"
+
+msgid "%d hours"
+msgstr "%d小时"
+
+msgid "%d minutes"
+msgstr "%d分"
+
+msgid "Just updated"
+msgstr "刚刚更新"
+
+msgid "%d minutes ago"
+msgstr "%d 分钟前更新"
+
+msgid "%d hours ago"
+msgstr "%d 小时前更新"
+
+msgid "Unknown model"
+msgstr "未知模型"
+
+msgid "Subagent"
+msgstr "子代理"
+
+msgid "Unattributed"
+msgstr "未归类"
+
+msgid "Monthly limit"
+msgstr "月额度"
+
+msgid "Weekly limit"
+msgstr "周额度"
+
+msgid "5-hour limit"
+msgstr "5 小时额度"
+
+msgid "Resets today at %s"
+msgstr "今天 %s 重置"
+
+msgid "Resets tomorrow at %s"
+msgstr "明天 %s 重置"
+
+msgid "Resets on %m/%d at %s"
+msgstr "%m月%d日 %s 重置"
+
+msgid "Usage"
+msgstr "用量"
+
+msgid "Agent usage"
+msgstr "智能体用量"
+
+msgid "Counting…"
+msgstr "正在统计…"
+
+msgid "Collector script is missing"
+msgstr "找不到用量采集脚本"
+
+msgid "Collection failed"
+msgstr "采集失败"
+
+msgid "Total %s"
+msgstr "总用量 %s"
+
+msgid "Refresh"
+msgstr "刷新"
+
+msgid "No Claude, Codex, Grok, or OpenCode logs were found."
+msgstr "还没有发现 Claude、Codex、Grok 或 OpenCode。"
+
+msgid "Model usage"
+msgstr "模型用量"
+
+msgid "Earlier figures · %s"
+msgstr "数字稍早 · %s"
+
+msgid "Project usage"
+msgstr "项目用量"
+
+msgid "Organizing projects…"
+msgstr "正在整理项目…"
+
+msgid "No records yet"
+msgstr "还没有记录"
+
+msgid "%d more projects · %s"
+msgstr "还有 %d 个项目 · %s"
+
+msgid "%d more models · %s"
+msgstr "还有 %d 个模型 · %s"
