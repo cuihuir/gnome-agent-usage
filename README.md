@@ -4,7 +4,7 @@ A GNOME Shell menu for AI coding agents.
 
 ![Agent Usage](images/preview.png)
 
-A 5-hour or weekly limit appears when a local login can answer it. Under that, usage is split by model and by project. A limit is shown only when its reset time is known.
+Each account lists only the windows it can answer: a model or plan, then `5h` or `7d`, a bar, the percent, and the time left. Under that, usage is split by model and by project.
 
 ## Install
 
